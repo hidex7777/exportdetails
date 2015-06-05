@@ -1,0 +1,2 @@
+# exportdetails
+Export Details Plugin
