@@ -33,6 +33,7 @@
     - VRLA
     - none（空きスロット）
 - 書き出し例：金透こみち, L7, RES, @1, CPS, CPS, TU, FA
+- シールディング値も入れたほうがいいかな？
 
 ## IITCの仕様（分かった部分だけ）
 - div#toolboxにプラグイン用リンクを追記できる
@@ -49,15 +50,15 @@
     - tdはインストールしたエージェント名
     - th > span.meterのtitle属性の文字列の中の"level:"と"owner:"の間にレゾネータレベルが記載（空白もあるのでトリムする）
     - th > span.meter > span.meter-levelの内容に「 L 8 」のように記載されているので、「L」を削除のうえトリムしてもレゾネータレベルを取得できる
-- div#portaldetails > div.linkdetails > aside[0]（内容が「Portal link」） > aのhref属性の値のうち&pllから後ろがポータルID、と考えてよい（llとは別なので注意）
+- div#portaldetails > div.linkdetails > aside[0]（内容が「Portal link」） > aのhref属性の値のうち&pll=から後ろがポータルID、と考えてよい（&ll=とは別なので注意）
 
 ## ロジック（妄想）
 - プラグイン用リンク（Export）をtoolboxに追記
     - もし、IITCが公式に認めているプラグイン以外がはねられるようなら、使っていないプラグインを書き換えて、無理やり入れる
 - Exportリンクにイベントリスナー設定
 - Exportリンククリック時(1)：とりまファイルクローズ
-- Exportリンククリック時(2)：中立ポタ（none）ならなにもしないで終了
-- Exportリンククリック時(3)：enlかresならファイルオープン（どのディレクトリにしますかね？）
+- Exportリンククリック時(2)：div#portaldetailsの内容が空のときはなにもしないで処理終了
+- Exportリンククリック時(3)：enlかresかnoneならファイルオープン（どのディレクトリにしますかね？）
 - ポータル名取得
 - ポータルレベル取得
 - MODS状態取得
