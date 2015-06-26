@@ -13,6 +13,7 @@ IITCの独自プラグインに当たるかも知れず、使用するとBANに�
 - 新規書き出しのばあいは、新しいレコードを追加
 
 ## 必要な情報
+- <ins>取得日時</ins>
 - ポータル名
 - RESかENLかnone（中立）か
 - 現レベル
@@ -39,7 +40,7 @@ IITCの独自プラグインに当たるかも知れず、使用するとBANに�
     - none（空きスロット）
 - shielding
 - AP Gain
-- 書き出し例：金透こみち, L7, RES, @1, Sh2000, AP1150, CPS, CPS, TU, FA
+- 書き出し例：金透こみち, L7, RES, @1, Sh2000, AP1150, CPS, CPS, TU, FA, last update yyyymmdd hh:mm
 - シールディング値も入れたほうがいいかな？
 
 ## IITCの仕様（分かった部分だけ）
