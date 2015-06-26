@@ -11,6 +11,7 @@
 // ==/UserScript==
 
 //jQuery読み込み
+//$の代わりにjQを使う
 function addJQuery(callback) {
   var script = document.createElement("script");
   script.setAttribute("src", "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
@@ -22,29 +23,40 @@ function addJQuery(callback) {
   document.body.appendChild(script);
 }
 
+
 //main
 function main() {
-  //$の代わりにjQを使う
-  jQ('body').append(jQ('<div>')
+  //dialog
+  var dialog = function(title) {
+    alert(
+      title +
+      "\n ダミーデータだよ。US15 AXA33 SB1 HS4 MH2(sum55)"
+    );
+  };
+  jQ('<div>', {id: 'exportdetails', text: 'E'})
     .css({
-      position: 'fixed',
-      bottom: '50px',
-      right: '50px',
-      width: '70px',
-      height: '70px',
-      backgroundColor: '#004F4A',
-      zIndex: '9999',
-      borderRadius: '50%'
+      position: 'absolute',
+      fontSize: '3em',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      color: '#47D9CB',
+      zIndex: '9999'
     })
-    .append(jQ('<div>', { text: 'E'})
+    .appendTo('<div>', { id: 'edWrapper'})
       .css({
-        fontSize: '3em',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#47D9CB'
+        position: 'fixed',
+        bottom: '50px',
+        right: '50px',
+        width: '70px',
+        height: '70px',
+        backgroundColor: '#004F4A',
+        zIndex: '9998',
+        borderRadius: '50%'
       })
-    )
-  );
+      .click(function(){
+        dialog('Export Details');
+      })
+      .appendTo('body');
 }
 
 //load jQuery and execute main function
