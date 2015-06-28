@@ -12,7 +12,7 @@
 
 //jQuery読み込み
 //$の代わりにjQを使う
-function addJQuery(callback) {
+var addJQuery = function(callback) {
   var script = document.createElement("script");
   script.setAttribute("src", "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
   script.addEventListener('load', function() {
@@ -21,7 +21,7 @@ function addJQuery(callback) {
     document.body.appendChild(script);
   }, false);
   document.body.appendChild(script);
-}
+};
 
 
 //main
@@ -59,7 +59,52 @@ function main() {
         dialog('Export Details');
       })
       .appendTo('body');
+  //FileSystem
+  ////errorHandler
+  var errorHandler = function(e) {
+    var msg ='';
+    switch (e.code) {
+      case FileError.QUOTA_EXCEEDED_ERR:
+        msg = 'QUOTA_EXCEEDED_ERR';
+        break;
+      case FileError.NOT_FOUND_ERR:
+        msg = "NOT_FOUND_ERR";
+        break;
+      case FileError.SECURITY_ERR:
+        msg = "SECURITY_ERR";
+        break;
+      case FileError.INVALID_MODIFICATION_ERR:
+        msg = "INVALID_MODIFICATION_ERR";
+        break;
+      default:
+      msg = 'Unknown Error';
+      break;
+    }
+    console.log('Error: ' + msg);
+  };
+  var onInitFs = function(fs) {
+    fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+      //create FileWriter
+      fileEntry.createWriter(function(fileWriter) {
+        fileWriter.onwriteend = function(e) {
+          console.log('Write completed.');
+        };
+        fileWriter.onerror = function(e) {
+          console.log('Write failed: ' + e.toString());
+        };
+        //create Blob
+        var fp = ['Lorem Ipsum'];
+        var bb = new Blob(fp, {type: 'text/plain'});
+        //bb.append('Lorem Ipsum');
+        //fileWriter.write(bb.getBlob('text/plain'));
+        fileWriter.write(bb);
+      }, errorHandler);
+    }, errorHandler);
+  };
+  window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+  window.requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, errorHandler);
 }
 
 //load jQuery and execute main function
+//Cu.importGlobalProperties(['Blob']);
 addJQuery(main);
