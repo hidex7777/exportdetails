@@ -12,7 +12,7 @@
 
 //jQuery読み込み
 //$の代わりにjQを使う
-function addJQuery(callback) {
+var addJQuery = function(callback) {
   var script = document.createElement("script");
   script.setAttribute("src", "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
   script.addEventListener('load', function() {
@@ -21,11 +21,12 @@ function addJQuery(callback) {
     document.body.appendChild(script);
   }, false);
   document.body.appendChild(script);
-}
+};
 
 
 //main
 function main() {
+  //cache
   //dialog
   var dialog = function(title) {
     alert(
@@ -33,31 +34,52 @@ function main() {
       "\n ダミーデータだよ。US15 AXA33 SB1 HS4 MH2(sum55)"
     );
   };
-  jQ('<div>', {id: 'exportdetails', text: 'E'})
+  //wrapper
+  jQ('<div>', { id: 'edWrapper'})
     .css({
-      position: 'absolute',
-      fontSize: '3em',
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: '#47D9CB',
-      zIndex: '9999'
+      position: 'fixed',
+      bottom: '50px',
+      right: '50px',
+      width: '70px',
+      height: '100px',
+      zIndex: '9997',
     })
-    .appendTo('<div>', { id: 'edWrapper'})
+    .appendTo('body');
+    //E-button
+    jQ('<div>', {id: 'exportdetails', text: 'E'})
       .css({
-        position: 'fixed',
-        bottom: '50px',
-        right: '50px',
+        position: 'relative',
+        backgroundColor: '#004F4A',
         width: '70px',
         height: '70px',
-        backgroundColor: '#004F4A',
+        fontSize: '4em',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#47D9CB',
         zIndex: '9998',
-        borderRadius: '50%'
-      })
-      .click(function(){
+        borderRadius: '50%',
+        cursor: 'pointer'
+      }).click(function(){
         dialog('Export Details');
-      })
-      .appendTo('body');
+      }).appendTo('div#edWrapper');
+    //link wrapper
+    jQ('<div>', {id: 'downloadlinkBox'})
+      .css({
+        position: 'relative',
+        width: '70px',
+        zIndex: '9999'
+      }).appendTo('div#edWrapper');
+    jQ('<a>', {id: 'downloadlink', text: 'download', download: 'log.txt', target: '_blank'})
+      .css({
+        fontSize: '1em',
+        textAlign: 'center',
+        color: '#47D9CB',
+        cursor: 'pointer'
+      }).appendTo('div#downloadlinkBox');
+  //Data URI Scheme
+  jQ('#downloadlink').attr('href', 'data:text/plain;base64,dGVzdA==');
 }
 
 //load jQuery and execute main function
+//Cu.importGlobalProperties(['Blob']);
 addJQuery(main);
