@@ -26,6 +26,7 @@ function addJQuery(callback) {
 
 //main
 function main() {
+  //cache
   //dialog
   var dialog = function(title) {
     alert(
@@ -36,7 +37,7 @@ function main() {
   jQ('<div>', {id: 'exportdetails', text: 'E'})
     .css({
       position: 'absolute',
-      fontSize: '3em',
+      fontSize: '4em',
       fontWeight: 'bold',
       textAlign: 'center',
       color: '#47D9CB',
@@ -51,7 +52,8 @@ function main() {
         height: '70px',
         backgroundColor: '#004F4A',
         zIndex: '9998',
-        borderRadius: '50%'
+        borderRadius: '50%',
+        cursor: 'pointer'
       })
       .click(function(){
         dialog('Export Details');
