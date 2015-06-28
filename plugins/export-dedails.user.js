@@ -34,75 +34,50 @@ function main() {
       "\n ダミーデータだよ。US15 AXA33 SB1 HS4 MH2(sum55)"
     );
   };
-  jQ('<div>', {id: 'exportdetails', text: 'E'})
+  //wrapper
+  jQ('<div>', { id: 'edWrapper'})
     .css({
-      position: 'absolute',
-      fontSize: '4em',
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: '#47D9CB',
-      zIndex: '9999'
+      position: 'fixed',
+      bottom: '50px',
+      right: '50px',
+      width: '70px',
+      height: '100px',
+      zIndex: '9997',
     })
-    .appendTo('<div>', { id: 'edWrapper'})
+    .appendTo('body');
+    //E-button
+    jQ('<div>', {id: 'exportdetails', text: 'E'})
       .css({
-        position: 'fixed',
-        bottom: '50px',
-        right: '50px',
+        position: 'relative',
+        backgroundColor: '#004F4A',
         width: '70px',
         height: '70px',
-        backgroundColor: '#004F4A',
+        fontSize: '4em',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#47D9CB',
         zIndex: '9998',
         borderRadius: '50%',
         cursor: 'pointer'
-      })
-      .click(function(){
+      }).click(function(){
         dialog('Export Details');
-      })
-      .appendTo('body');
-  //FileSystem
-  ////errorHandler
-  var errorHandler = function(e) {
-    var msg ='';
-    switch (e.code) {
-      case FileError.QUOTA_EXCEEDED_ERR:
-        msg = 'QUOTA_EXCEEDED_ERR';
-        break;
-      case FileError.NOT_FOUND_ERR:
-        msg = "NOT_FOUND_ERR";
-        break;
-      case FileError.SECURITY_ERR:
-        msg = "SECURITY_ERR";
-        break;
-      case FileError.INVALID_MODIFICATION_ERR:
-        msg = "INVALID_MODIFICATION_ERR";
-        break;
-      default:
-      msg = 'Unknown Error';
-      break;
-    }
-    console.log('Error: ' + msg);
-  };
-  var onInitFs = function(fs) {
-    fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
-      //create FileWriter
-      fileEntry.createWriter(function(fileWriter) {
-        fileWriter.onwriteend = function(e) {
-          console.log('Write completed.');
-        };
-        fileWriter.onerror = function(e) {
-          console.log('Write failed: ' + e.toString());
-        };
-        //create Blob
-        var fp = ['Lorem Ipsum'];
-        var bb = new Blob(fp, {type: 'text/plain'});
-        //bb.append('Lorem Ipsum');
-        //fileWriter.write(bb.getBlob('text/plain'));
-        fileWriter.write(bb);
-      }, errorHandler);
-    }, errorHandler);
-  };
-  window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-  window.requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, errorHandler);
+      }).appendTo('div#edWrapper');
+    //link wrapper
+    jQ('<div>', {id: 'downloadlinkBox'})
+      .css({
+        position: 'relative',
+        width: '70px',
+        zIndex: '9999'
+      }).appendTo('div#edWrapper');
+    jQ('<a>', {id: 'downloadlink', text: 'download', download: 'log.txt', target: '_blank'})
+      .css({
+        fontSize: '1em',
+        textAlign: 'center',
+        color: '#47D9CB',
+        cursor: 'pointer'
+      }).appendTo('div#downloadlinkBox');
+  //Data URI Scheme
+  jQ('#downloadlink').attr('href', 'data:text/plain;base64,dGVzdA==');
 }
 
 //load jQuery and execute main function
