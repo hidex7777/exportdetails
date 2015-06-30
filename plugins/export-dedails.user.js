@@ -23,32 +23,35 @@ var addJQuery = function(callback) {
   document.body.appendChild(script);
 };
 
-
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
-  //キャッシュの場所確保
-  var cacheText = "";
-  var cache = jQ('<textarea>', { id: 'cache'})
-    .css({
-      display: 'none'
-    }).text(cacheText);
-  cache.appendTo(document.body);
-  //タイムスタンプ
+  //タイムスタンプ関数
+  var styleDatetime = function(digits) {
+    var twodigits = "00";
+    digits = digits.toString();
+    if (/^[0-9]{1}$/.test(digits)) {
+      console.log("digits is " + digits);
+      digits = "0" + digits;
+    }
+    twodigits = digits;
+    console.log("2dig is " + twodigits);
+    console.log("type.2dig: " + typeof twodigits);
+    return twodigits;
+  };
   var getDatetime = function() {
     var dt = new Date();
     var y = dt.getFullYear().toString();
-    var m = dt.getMonth() + 1;
-    m = m.toString();
-    var d = dt.getDate().toString();
-    var h = dt.getHours().toString();
-    var min = dt.getMinutes().toString();
+    var m = styleDatetime(dt.getMonth() + 1);
+    var d = styleDatetime(dt.getDate());
+    var h = styleDatetime(dt.getHours());
+    var min = styleDatetime(dt.getMinutes());
     return y + m + d + h + min;
   };
   var setDatetime = function() {
     jQ('#downloadlink').attr('download', 'IITC' + getDatetime() + '.txt');
   };
-  //キャシュアップデート
+  //キャシュアップデート関数
   var setCache = function() {
     //Mods取得と整形
     var getMods = function(context) {
@@ -175,17 +178,28 @@ var main = function() {
     }
   };
   //setCache終わり
-  //wrapper
+  //wrapper　ここからベタ書き
   var ew = jQ('<div>', { id: 'edWrapper'})
     .css({
       position: 'fixed',
-      bottom: '50px',
-      right: '50px',
-      width: '70px',
-      height: '100px',
+      bottom: '10px',
+      right: '0px',
+      width: '120px',
+      height: '170px',
       zIndex: '9997',
+      backgroundColor: '#CCCCCC;'//debug
     });
   ew.appendTo(document.body);
+    //キャッシュの場所確保
+  var cacheText = "";
+  var cache = jQ('<textarea>', { id: 'cache'})
+    .css({
+      position: 'relative',
+      width: '120px',
+      height: '40px',
+      fontSize: '0.8em'
+    }).text(cacheText);
+  cache.appendTo(ew);
   //E-button
   jQ('<div>', {id: 'exportdetails', text: 'E'})
     .css({
@@ -193,6 +207,7 @@ var main = function() {
       backgroundColor: '#004F4A',
       width: '70px',
       height: '70px',
+      margin: '0 auto',
       fontSize: '4em',
       fontWeight: 'bold',
       textAlign: 'center',
@@ -208,6 +223,7 @@ var main = function() {
   var dlb = jQ('<div>', {id: 'downloadlinkBox'})
     .css({
       position: 'relative',
+      margin: '0 auto',
       width: '70px',
       textAlign: 'center',
       zIndex: '9999'
