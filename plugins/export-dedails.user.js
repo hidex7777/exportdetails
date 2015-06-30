@@ -26,17 +26,15 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
+  //variables
+  var cacheText = "";
   //タイムスタンプ関数
   var styleDatetime = function(digits) {
-    var twodigits = "00";
     digits = digits.toString();
     if (/^[0-9]{1}$/.test(digits)) {
-      console.log("digits is " + digits);
       digits = "0" + digits;
     }
-    twodigits = digits;
-    console.log("2dig is " + twodigits);
-    console.log("type.2dig: " + typeof twodigits);
+    var twodigits = digits;
     return twodigits;
   };
   var getDatetime = function() {
@@ -113,7 +111,7 @@ var main = function() {
       return modsarr[0] + ", " + modsarr[1] + ", " + modsarr[2] + ", " + modsarr[3];
     };
     //残りレゾ計算
-    var neededforLv8 = function(portal, portalLv) {
+    var neededforLv8 = function(context, portalLv) {
       var myresoarr = [0,0,0,0,0,0,0,0];
       var my8reso = 0;
       if (portalLv == "L8") {
@@ -121,7 +119,7 @@ var main = function() {
       } else if (portalLv == "L0") {
         myresoarr = [0,0,0,0,0,0,0,0];
       } else {
-        var resotable = jQ('#resodetails > tbody', portal);
+        var resotable = jQ('#resodetails > tbody', context);
         var myind = 0;
         for (var i = 0; i < 4; i++) {
           for (var j = 0; j < 2; j++) {
@@ -187,11 +185,10 @@ var main = function() {
       width: '120px',
       height: '170px',
       zIndex: '9997',
-      backgroundColor: '#CCCCCC;'//debug
+      backgroundColor: '#CCCCCC;'
     });
   ew.appendTo(document.body);
-    //キャッシュの場所確保
-  var cacheText = "";
+  //キャッシュの場所確保
   var cache = jQ('<textarea>', { id: 'cache'})
     .css({
       position: 'relative',

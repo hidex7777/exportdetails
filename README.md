@@ -9,7 +9,8 @@
 - IITCの独自プラグインに当たるかも知れず、使用するとBANになる可能性がなきにしもあらず、であることをよく理解したうえで使うべし。
 - Chrome + Tempermonkeyでしかテストしておらず。
 - IITC本体の他にportal-listプラグインを入れていることを想定している（必須ではない）。
-- Tempermonkeyのダッシュボードのエディターにコピペ、保存して使う（直接インストールできない）。
+- Tempermonkeyのダッシュボードのエディターにコピペ、保存してインストール。
+- もしくは[https://github.com/hidex7777/exportdetails/blob/master/plugins/export-dedails.user.js](https://github.com/hidex7777/exportdetails/blob/master/plugins/export-dedails.user.js)で「RAW」をクリックでインストール。
 - 2015.06.30時点：タイプのエラーが出ている。2回クリックするとダブる。
 
 ## 目的と動作、仕様
