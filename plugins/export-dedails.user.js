@@ -112,6 +112,27 @@ var main = function() {
     };
     //残りレゾ計算
     var neededforLv8 = function(context, portalLv) {
+      if (portalLv == "L8") {
+        return "@0";
+      } if else (portalLv == "L0") {
+        return "@8";
+      } else {
+        var tmpStr = context.toString();
+        var needle = "level:\t8";
+        var i = 0;
+        var cnt = 0;
+        if (tmpStr.indexOf(needle) != -1) {
+          do {
+            i = tmpStr.indexOf(needle);
+            tmpStr = tmpStr.replace(needle, "");
+            cnt++
+          }while (i != -1);
+        }
+        alert('cnt: ' + cnt);
+        var needed8r = 8 - cnt;
+        return "@" + needed8r.toString();
+      }
+      /*
       var myresoarr = [0,0,0,0,0,0,0,0];
       var my8reso = 0;
       if (portalLv == "L8") {
@@ -144,6 +165,7 @@ var main = function() {
       }
       my8reso = 8 - my8reso;
       return "@" + my8reso.toString();
+      */
     };
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
@@ -157,7 +179,7 @@ var main = function() {
         //faction取得
         var faction = pd.attr('class').toUpperCase();
         //残りレゾネータ取得
-        var needed8r = neededforLv8(pd, portalLv);
+        var needed8r = neededforLv8(jQ('#resodetails', pd), portalLv);
         //シールディング
         var shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
