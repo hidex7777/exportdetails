@@ -114,58 +114,19 @@ var main = function() {
     var neededforLv8 = function(context, portalLv) {
       if (portalLv == "L8") {
         return "@0";
-      } if else (portalLv == "L0") {
+      } else if (portalLv == "L0") {
         return "@8";
       } else {
-        var tmpStr = context.toString();
+        var tmpStr = context.html();
         var needle = "level:\t8";
-        var i = 0;
         var cnt = 0;
-        if (tmpStr.indexOf(needle) != -1) {
-          do {
-            i = tmpStr.indexOf(needle);
-            tmpStr = tmpStr.replace(needle, "");
-            cnt++
-          }while (i != -1);
+        for (var i = 0; tmpStr.indexOf(needle) != -1; cnt++) {
+          i = tmpStr.indexOf(needle);
+          tmpStr = tmpStr.replace(needle, "");
         }
-        alert('cnt: ' + cnt);
         var needed8r = 8 - cnt;
         return "@" + needed8r.toString();
       }
-      /*
-      var myresoarr = [0,0,0,0,0,0,0,0];
-      var my8reso = 0;
-      if (portalLv == "L8") {
-        myresoarr = [8,8,8,8,8,8,8,8];
-      } else if (portalLv == "L0") {
-        myresoarr = [0,0,0,0,0,0,0,0];
-      } else {
-        var resotable = jQ('#resodetails > tbody', context);
-        var myind = 0;
-        for (var i = 0; i < 4; i++) {
-          for (var j = 0; j < 2; j++) {
-            var mytr = jQ('tr', resotable)[i];
-            var myth = jQ('th', mytr)[j];
-            if (jQ('span.meter', myth).attr('title')) {
-              //レゾネータレベルを抜き出し
-              var myreso = jQ('span.meter', myth).attr('title');
-              var mypos1 = myreso.indexOf("level:");
-              var mypos2 = myreso.indexOf("owner:");
-              myreso = myreso.slice(mypos1 + 6, mypos2 - 1);
-              myreso = parseInt(myreso);
-              myresoarr[myind] = myreso;
-              myind++;
-            }
-          }
-        }
-        //for文終わり
-      }
-      for (var k = 0; k < 8; k++){
-        if (myresoarr[k] == 8) my8reso++;
-      }
-      my8reso = 8 - my8reso;
-      return "@" + my8reso.toString();
-      */
     };
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
