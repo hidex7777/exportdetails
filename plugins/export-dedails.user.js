@@ -26,8 +26,61 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
-  //variables
-  var cacheText = "";
+  //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
+  var SSKEY = "export-details";
+  //ブラウザ起動時に初期化する。
+  sessionStorage.removeItem(SSKEY);
+  //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
+  //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
+  //このハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
+  /*モデル
+  sessionStorage{
+    SSKEY: ssValue Object
+  }
+  //ssValueのなかにおいて、pll(key)は一意である。
+  //既存のpll(key)のプロパティは上書きされる。
+  ssValue{
+    pll:{
+      portalname: String,
+      portallv: String,
+      faction: String,
+      needed8r: String,
+      shielding: String,
+      ap: String,
+      mods: String
+    },
+    pll:{
+      ......
+    }
+  }
+  */
+  //ひとつのポータルにひとつのStorageを割り当てる
+  var Storage = new Object();
+  var samp_pll = "37.401581,140.385654";
+  var samp_data = {
+    samp_pll:{
+      portalname: "サンプルポータル",
+      portallv: "L7",
+      faction: "RES",
+      needed8r: "@4",
+      shielding: "Shielding: 2222",
+      ap: "AP: 2525",
+      mods: "CPS, CPS, AXA, AXA"
+    }
+  };
+  /*
+  function(key) {
+    this.pll = key;
+    this.pll.portalname = new String();
+    this.pll.portallv = new String();
+    this.pll.faction = new String();
+    this.pll.needed8r = new String();
+    this.pll.shielding = new String();
+    this.pll.ap = new String();
+    this.pll.mods = new String();
+  };*/
+  //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
+  var ssValue = new Object();
   //タイムスタンプ関数
   var styleDatetime = function(digits) {
     digits = digits.toString();
@@ -128,33 +181,86 @@ var main = function() {
         return "@" + needed8r.toString();
       }
     };
+    var getPll = function(context) {
+      var href = jQ('.linkdetails aside:eq(0) a', context).attr('href');
+      var rg = /pll=([0-9]+\.[0-9]+,[0-9]+\.[0-9]+)/;
+      var result = rg.exec(href);
+      return RegExp.$1;
+    };
+    //ダウンロードリンクをssValueから生成
+    var setTextEnc = function() {
+      ssValue = sessionStorage.getItem(SSKEY);
+      var mydata = new Object();
+      mydata.portalname = new Object();
+      mydata.portallv = new Object();
+      mydata.faction = new Object();
+      mydata.needed8r = new Object();
+      mydata.shielding = new Object();
+      mydata.ap = new Object();
+      mydata.mods = new Object();
+      var myHref;
+      var key;
+      for (key in ssValue) {
+        console.log("key: " + key);
+        var myvalue = ssValue[key];
+        if (!myvalue) {
+          continue;
+        }
+        try {
+          mydata = JSON.parse(myvalue);
+        } catch (event) {
+          console.log("e: " + event);
+          continue;
+        }
+        myHref += myHref + mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.shielding + ", " + mydata.ap + ", " + mydata.mods + "\n";
+      }
+      myHref = 'data:application/octet-stream,' + encodeURIComponent(myHref);
+      jQ('a#downloadlink').attr('href', myHref);
+    };
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
+        //Object生成
+        var mydata = new Object();
+        //pll取得＝キーにする
+        var pll = getPll(pd);
+        mydata[pll] = pll;
         //ポータル名取得
-        var portalName = jQ('h3.title', pd).text();
+        mydata[pll].portalname = new Object();
+        mydata[pll].portalname = jQ('h3.title', pd).text();
         //ポータルレベル取得
+        mydata[pll].portallv = new Object();
         var portalLv = jQ('div.imgpreview > span#level', pd).text();
-        portalLv = "L" + portalLv.replace(/\s/g, "");
+        mydata[pll].portallv = "L" + portalLv.replace(/\s/g, "");
         //faction取得
-        var faction = pd.attr('class').toUpperCase();
+        mydata[pll].faction = new Object();
+        mydata[pll].faction = pd.attr('class').toUpperCase();
         //残りレゾネータ取得
-        var needed8r = neededforLv8(jQ('#resodetails', pd), portalLv);
+        mydata[pll].needed8r = new Object();
+        mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), portalLv);
         //シールディング
-        var shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        mydata[pll].shielding = new Object();
+        mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
-        var ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
+        mydata[pll].ap = new Object();
+        mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
         //MODs
-        var mods = getMods(pd);
+        mydata[pll].mods = new Object();
+        mydata[pll].mods = getMods(pd);
         //取得日時
-        var lastupdate = "last update: " + getDatetime();
+        //var lastupdate = "last update: " + getDatetime();
         //テキスト整形
-        cacheText = jQ('#cache').val() + portalName + ", " + portalLv + ", " + faction + ", " + needed8r + ", " + shielding + ", " + ap + ", " + mods + "\n";
+        var myStr = JSON.stringify(mydata[pll]);
+        //セッションストレージへ格納（key: SSKEY, value: ssValue）
+        ssValue += myStr;
+        sessionStorage.setItem(SSKEY, ssValue);
+        console.log(myStr);
+        /*cacheText = jQ('#cache').val() + portalName + ", " + portalLv + ", " + faction + ", " + needed8r + ", " + shielding + ", " + ap + ", " + mods + "\n";*/
         //", " + lastupdate +
-        cache.text(cacheText);
-        var mydata = 'data:application/octet-stream,' + encodeURIComponent(cacheText);
-        jQ('a#downloadlink').attr('href', mydata);
+        //cache.text(cacheText);
+        //テキスト用エンコード
+        setTextEnc();
       }
     }
   };
@@ -166,20 +272,20 @@ var main = function() {
       bottom: '10px',
       right: '0px',
       width: '120px',
-      height: '170px',
+      height: '130px',
       zIndex: '9997',
       backgroundColor: '#CCCCCC;'
     });
   ew.appendTo(document.body);
   //キャッシュの場所確保
-  var cache = jQ('<textarea>', { id: 'cache'})
+  /*var cache = jQ('<textarea>', { id: 'cache'})
     .css({
       position: 'relative',
       width: '120px',
       height: '40px',
       fontSize: '0.8em'
     }).text(cacheText);
-  cache.appendTo(ew);
+  cache.appendTo(ew);*/
   //E-button
   jQ('<div>', {id: 'exportdetails', text: 'E'})
     .css({
