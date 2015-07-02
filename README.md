@@ -7,6 +7,22 @@
 - WebStorageを使ってみる。
     - localStorageはIITCがすでにだいぶ使っているのでsessionStrageを使うことにする。
 - 2回押したときは、後から押した方で先に出ていたデータを上書きする。
+- こういう↓ふうに連想配列に入れるにはどうしたらいいのか検討：
+
+```json
+pll1nnn...:{
+  portalname: String,
+  portallv: String,
+  faction: String,
+  needed8r: String,
+  shielding: String,
+  ap: String,
+  mods: String
+},
+pll2nnn...:{
+  ......
+}
+```
 
 ## 注意点
 - IITCの独自プラグインに当たるかも知れず、使用するとBANになる可能性がなきにしもあらず、であることをよく理解したうえで使うべし。
@@ -14,7 +30,6 @@
 - IITC本体の他にportal-listプラグインを入れていることを想定している（必須ではない）。
 - Tempermonkeyのダッシュボードのエディターにコピペ、保存してインストール。
 - もしくは[https://github.com/hidex7777/exportdetails/blob/master/plugins/export-dedails.user.js](https://github.com/hidex7777/exportdetails/blob/master/plugins/export-dedails.user.js)で「RAW」をクリックでインストール。
-- 2015.06.30時点：タイプのエラーが出ている。2回クリックするとダブる。
 
 ## 目的と動作、仕様
 - IITCでPortal listもしくは直接ポータルを選択してポータル詳細を表示する。
@@ -51,7 +66,7 @@
     - none（空きスロット）
 - shielding
 - AP Gain
-- 書き出し例：金透こみち, L7, RES, @1, Shielding: 2000, AP: 1150, CPS, CPS, TU, FA, last update: yyyymmdd hh:mm
+- 書き出し例：金透こみち, L7, RES, @1, CPS, CPS, TU, FA, Shielding: 2000, AP: 1150, last update: yyyymmdd hh:mm
 
 ## IITCの仕様（分かった部分だけ）
 - div#portaldetailsにポータル詳細が記載。

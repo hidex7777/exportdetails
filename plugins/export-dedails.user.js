@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           Export Details for IITC
-// @version        0.0.1
+// @version        0.0.2
 // @description    Export info about Portals into local strage. Portal ID(pll), Portal name, level, MODs, Resonators, fuction, shielding, AP Gain.
 // @namespace      kojunkan.org
 // @include        https://www.ingress.com/intel*
@@ -26,21 +26,23 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
+  /*将来的には*/
   //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
-  var SSKEY = "export-details";
+  //var SSKEY = "export-details";
   //ブラウザ起動時に初期化する。
-  sessionStorage.removeItem(SSKEY);
+  //sessionStorage.removeItem(SSKEY);
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
+  //var ssValue = {};
   //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
-  //このハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
+  //格納するハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
   /*モデル
   sessionStorage{
     SSKEY: ssValue Object
   }
-  //ssValueのなかにおいて、pll(key)は一意である。
+  //ssValueのなかにおいて、pllnnn....(key)は一意である。
   //既存のpll(key)のプロパティは上書きされる。
   ssValue{
-    pll:{
+    pll1nnn...:{
       portalname: String,
       portallv: String,
       faction: String,
@@ -49,16 +51,16 @@ var main = function() {
       ap: String,
       mods: String
     },
-    pll:{
+    pll2nnn...:{
       ......
     }
   }
   */
   //ひとつのポータルにひとつのStorageを割り当てる
-  var Storage = new Object();
-  var samp_pll = "37.401581,140.385654";
+  /*var Storage = new Object();
+  var samp_pll = "pll37_401581__140_385654";
   var samp_data = {
-    samp_pll:{
+    pll37_401581__140_385654:{
       portalname: "サンプルポータル",
       portallv: "L7",
       faction: "RES",
@@ -67,7 +69,7 @@ var main = function() {
       ap: "AP: 2525",
       mods: "CPS, CPS, AXA, AXA"
     }
-  };
+  };*/
   /*
   function(key) {
     this.pll = key;
@@ -80,7 +82,8 @@ var main = function() {
     this.pll.mods = new String();
   };*/
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
-  var ssValue = new Object();
+  //var ssValue = new Object();
+  sessionStorage.clear();
   //タイムスタンプ関数
   var styleDatetime = function(digits) {
     digits = digits.toString();
@@ -173,7 +176,7 @@ var main = function() {
         var tmpStr = context.html();
         var needle = "level:\t8";
         var cnt = 0;
-        for (var i = 0; tmpStr.indexOf(needle) != -1; cnt++) {
+        for (var i = 0; i != -1; cnt++) {
           i = tmpStr.indexOf(needle);
           tmpStr = tmpStr.replace(needle, "");
         }
@@ -185,12 +188,17 @@ var main = function() {
       var href = jQ('.linkdetails aside:eq(0) a', context).attr('href');
       var rg = /pll=([0-9]+\.[0-9]+,[0-9]+\.[0-9]+)/;
       var result = rg.exec(href);
-      return RegExp.$1;
+      var pllAsKey = RegExp.$1;
+      pllAsKey = "pll" + pllAsKey.replace(/\./g,"_");
+      pllAsKey = pllAsKey.replace(",", "__");
+      return pllAsKey;
     };
     //ダウンロードリンクをssValueから生成
     var setTextEnc = function() {
-      ssValue = sessionStorage.getItem(SSKEY);
-      var mydata = new Object();
+     //ssValue = sessionStorage.getItem(SSKEY); 将来的には
+     //テーブルのデータ　key : mydata
+     //値mydata ={}
+      var mydata = {};
       mydata.portalname = new Object();
       mydata.portallv = new Object();
       mydata.faction = new Object();
@@ -198,11 +206,12 @@ var main = function() {
       mydata.shielding = new Object();
       mydata.ap = new Object();
       mydata.mods = new Object();
-      var myHref;
-      var key;
-      for (key in ssValue) {
+      var myHref = "";
+      for (var i = 0; i < sessionStorage.length; i++) {
+        var key = sessionStorage.key(i);
         console.log("key: " + key);
-        var myvalue = ssValue[key];
+        var myvalue = sessionStorage.getItem(key);
+        console.log(myvalue);
         if (!myvalue) {
           continue;
         }
@@ -212,20 +221,23 @@ var main = function() {
           console.log("e: " + event);
           continue;
         }
-        myHref += myHref + mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.shielding + ", " + mydata.ap + ", " + mydata.mods + "\n";
+        myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";
       }
       myHref = 'data:application/octet-stream,' + encodeURIComponent(myHref);
       jQ('a#downloadlink').attr('href', myHref);
     };
+    //setTextEnc終わり
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
         //Object生成
-        var mydata = new Object();
+        var mydata = {};
         //pll取得＝キーにする
         var pll = getPll(pd);
-        mydata[pll] = pll;
+        //mydata[pll] = pll;
+        //mydata = {};
+        mydata[pll] = {};
         //ポータル名取得
         mydata[pll].portalname = new Object();
         mydata[pll].portalname = jQ('h3.title', pd).text();
@@ -253,12 +265,9 @@ var main = function() {
         //テキスト整形
         var myStr = JSON.stringify(mydata[pll]);
         //セッションストレージへ格納（key: SSKEY, value: ssValue）
-        ssValue += myStr;
-        sessionStorage.setItem(SSKEY, ssValue);
-        console.log(myStr);
-        /*cacheText = jQ('#cache').val() + portalName + ", " + portalLv + ", " + faction + ", " + needed8r + ", " + shielding + ", " + ap + ", " + mods + "\n";*/
-        //", " + lastupdate +
-        //cache.text(cacheText);
+        var ssValue = {};
+        ssValue = myStr;
+        sessionStorage.setItem(pll, ssValue);
         //テキスト用エンコード
         setTextEnc();
       }
@@ -277,15 +286,6 @@ var main = function() {
       backgroundColor: '#CCCCCC;'
     });
   ew.appendTo(document.body);
-  //キャッシュの場所確保
-  /*var cache = jQ('<textarea>', { id: 'cache'})
-    .css({
-      position: 'relative',
-      width: '120px',
-      height: '40px',
-      fontSize: '0.8em'
-    }).text(cacheText);
-  cache.appendTo(ew);*/
   //E-button
   jQ('<div>', {id: 'exportdetails', text: 'E'})
     .css({
