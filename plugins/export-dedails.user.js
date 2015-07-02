@@ -250,7 +250,7 @@ var main = function() {
         mydata[pll].faction = pd.attr('class').toUpperCase();
         //残りレゾネータ取得
         mydata[pll].needed8r = new Object();
-        mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), portalLv);
+        mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), mydata[pll].portallv);
         //シールディング
         mydata[pll].shielding = new Object();
         mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
