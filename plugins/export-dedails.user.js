@@ -26,7 +26,6 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
-  /*将来的には*/
   //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
   var SSKEY = "export-details";
   //ブラウザ起動時に初期化する。
@@ -208,7 +207,7 @@ var main = function() {
     //ダウンロードリンクをssValueから生成
     var setTextEnc = function() {
      ssValue = sessionStorage.getItem(SSKEY);
-     //テーブルのデータ　key : mydata
+     //テーブルのデータ key : mydata
      //値mydata ={}
      /*
       var mydata = {};
@@ -258,7 +257,6 @@ var main = function() {
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
-        //子Object生成
         //var mydata = {};
         //pll取得＝キーにする
         var pll = getPll(pd);
@@ -305,13 +303,12 @@ var main = function() {
           "mods": mods
         };
         //親オブジェクトに代入
+        ssValue = sessionStorage.getItem(SSKEY);
         ssValue[pll] = mydata;
         //テキスト整形
         //Object型をJSON形式に変換
         var myJson = JSON.stringify(ssValue);
         //セッションストレージへ格納（key: SSKEY, value: ssValue）
-        //var ssValue = {};
-        //ssValue = myStr;
         //sessionStorage.setItem(pll, ssValue);
         sessionStorage.setItem(SSKEY, myJson);
         //テキスト用エンコード
