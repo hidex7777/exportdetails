@@ -28,11 +28,11 @@ var addJQuery = function(callback) {
 var main = function() {
   /*将来的には*/
   //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
-  //var SSKEY = "export-details";
+  var SSKEY = "export-details";
   //ブラウザ起動時に初期化する。
   //sessionStorage.removeItem(SSKEY);
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
-  //var ssValue = {};
+  var ssValue = new Object();
   //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
   //格納するハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
   /*モデル
@@ -83,7 +83,18 @@ var main = function() {
   };*/
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
   //var ssValue = new Object();
-  sessionStorage.clear();
+  //旧バージョンの尻拭い
+  //keyがpllで始まっているものをdelete
+  var removeOldcache() {
+    for (var i = 0; i < sessionStorage.length; i++) {
+      var key = sessionStorage.key(i);
+      if (key.match(/^pll/)) {
+        sessionStorage.removeItem(key);
+      }
+    }
+  };
+  removeOldcache();
+  //sessionStorage.clear();
   //タイムスタンプ関数
   var styleDatetime = function(digits) {
     digits = digits.toString();
@@ -221,53 +232,77 @@ var main = function() {
           console.log("e: " + event);
           continue;
         }
-        myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";
+        var pll;
+        for (pll in mydata) {
+          myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";  
+        }
       }
       myHref = 'data:application/octet-stream,' + encodeURIComponent(myHref);
       jQ('a#downloadlink').attr('href', myHref);
     };
     //setTextEnc終わり
+    //Eボタンが押されたとき。sessionStorageに入れるところまで
+    //ssValueが親Object、mydataが子オブジェクト
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
-        //Object生成
-        var mydata = {};
+        //子Object生成
+        //var mydata = {};
         //pll取得＝キーにする
         var pll = getPll(pd);
-        //mydata[pll] = pll;
-        //mydata = {};
-        mydata[pll] = {};
+        //mydata[pll] = {};
         //ポータル名取得
-        mydata[pll].portalname = new Object();
-        mydata[pll].portalname = jQ('h3.title', pd).text();
+        //mydata[pll].portalname = new Object();
+        //mydata[pll].portalname = jQ('h3.title', pd).text();
+        var portalname = jQ('h3.title', pd).text();
         //ポータルレベル取得
-        mydata[pll].portallv = new Object();
-        var portalLv = jQ('div.imgpreview > span#level', pd).text();
-        mydata[pll].portallv = "L" + portalLv.replace(/\s/g, "");
+        //mydata[pll].portallv = new Object();
+        var portallv = jQ('div.imgpreview > span#level', pd).text();
+        //mydata[pll].portallv = "L" + portalLv.replace(/\s/g, "");
+        portallv = "L" + portalLv.replace(/\s/g, "");
         //faction取得
-        mydata[pll].faction = new Object();
-        mydata[pll].faction = pd.attr('class').toUpperCase();
+        //mydata[pll].faction = new Object();
+        //mydata[pll].faction = pd.attr('class').toUpperCase();
+        var faction = pd.attr('class').toUpperCase();
         //残りレゾネータ取得
-        mydata[pll].needed8r = new Object();
-        mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), mydata[pll].portallv);
+        //mydata[pll].needed8r = new Object();
+        //mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), mydata[pll].portallv);
+        var needed8r = neededforLv8(jQ('#resodetails', pd), portallv);
         //シールディング
-        mydata[pll].shielding = new Object();
-        mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        //mydata[pll].shielding = new Object();
+        //mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
-        mydata[pll].ap = new Object();
-        mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
+        //mydata[pll].ap = new Object();
+        //mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
+        var ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
         //MODs
-        mydata[pll].mods = new Object();
-        mydata[pll].mods = getMods(pd);
+        //mydata[pll].mods = new Object();
+        //mydata[pll].mods = getMods(pd);
+        var mods = getMods(pd);
         //取得日時
         //var lastupdate = "last update: " + getDatetime();
+        //子オブジェクト作成
+        var mydata = {
+          "portalname": portalname,
+          "portallv": portallv,
+          "faction": faction,
+          "needed8r": needed8r,
+          "shielding": shielding,
+          "ap": ap,
+          "mods", mods
+        };
+        //親オブジェクトに代入
+        ssValue[pll] = mydata;
         //テキスト整形
-        var myStr = JSON.stringify(mydata[pll]);
+        //Object型をJSON形式に変換
+        var myJson = JSON.stringify(ssValue);
         //セッションストレージへ格納（key: SSKEY, value: ssValue）
-        var ssValue = {};
-        ssValue = myStr;
-        sessionStorage.setItem(pll, ssValue);
+        //var ssValue = {};
+        //ssValue = myStr;
+        //sessionStorage.setItem(pll, ssValue);
+        sessionStorage.setItem(SSKEY, myJson);
         //テキスト用エンコード
         setTextEnc();
       }
