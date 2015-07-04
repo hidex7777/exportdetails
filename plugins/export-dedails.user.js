@@ -84,8 +84,9 @@ var main = function() {
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
   //var ssValue = new Object();
   //旧バージョンの尻拭い
-  //keyがpllで始まっているものをdelete
-  var removeOldcache() {
+  //keyがpllで始まっているものをdelete, SSKEYも消す
+  var removeOldcache = function() {
+    sessionStorage.removeItem(SSKEY);
     for (var i = 0; i < sessionStorage.length; i++) {
       var key = sessionStorage.key(i);
       if (key.match(/^pll/)) {
@@ -206,9 +207,10 @@ var main = function() {
     };
     //ダウンロードリンクをssValueから生成
     var setTextEnc = function() {
-     //ssValue = sessionStorage.getItem(SSKEY); 将来的には
+     ssValue = sessionStorage.getItem(SSKEY);
      //テーブルのデータ　key : mydata
      //値mydata ={}
+     /*
       var mydata = {};
       mydata.portalname = new Object();
       mydata.portallv = new Object();
@@ -227,6 +229,7 @@ var main = function() {
           continue;
         }
         try {
+          //Object型にする
           mydata = JSON.parse(myvalue);
         } catch (event) {
           console.log("e: " + event);
@@ -236,6 +239,14 @@ var main = function() {
         for (pll in mydata) {
           myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";  
         }
+      }
+      */
+      var mydata = new Object();
+      mydata = JSON.parse(ssValue);
+      var myHref = "";
+      var pll;
+      for (pll in mydata) {
+        myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";  
       }
       myHref = 'data:application/octet-stream,' + encodeURIComponent(myHref);
       jQ('a#downloadlink').attr('href', myHref);
@@ -260,7 +271,7 @@ var main = function() {
         //mydata[pll].portallv = new Object();
         var portallv = jQ('div.imgpreview > span#level', pd).text();
         //mydata[pll].portallv = "L" + portalLv.replace(/\s/g, "");
-        portallv = "L" + portalLv.replace(/\s/g, "");
+        portallv = "L" + portallv.replace(/\s/g, "");
         //faction取得
         //mydata[pll].faction = new Object();
         //mydata[pll].faction = pd.attr('class').toUpperCase();
@@ -291,7 +302,7 @@ var main = function() {
           "needed8r": needed8r,
           "shielding": shielding,
           "ap": ap,
-          "mods", mods
+          "mods": mods
         };
         //親オブジェクトに代入
         ssValue[pll] = mydata;
