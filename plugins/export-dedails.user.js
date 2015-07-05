@@ -26,12 +26,12 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
-  /*将来的には*/
   //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
   var SSKEY = "export-details";
   //ブラウザ起動時に初期化する。
   //sessionStorage.removeItem(SSKEY);
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
+  //var ssValue = sessionStorage.getItem(SSKEY) || new Object();
   var ssValue = new Object();
   //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
   //格納するハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
@@ -208,7 +208,7 @@ var main = function() {
     //ダウンロードリンクをssValueから生成
     var setTextEnc = function() {
      ssValue = sessionStorage.getItem(SSKEY);
-     //テーブルのデータ　key : mydata
+     //テーブルのデータ key : mydata
      //値mydata ={}
      /*
       var mydata = {};
@@ -258,7 +258,6 @@ var main = function() {
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
-        //子Object生成
         //var mydata = {};
         //pll取得＝キーにする
         var pll = getPll(pd);
@@ -283,7 +282,7 @@ var main = function() {
         //シールディング
         //mydata[pll].shielding = new Object();
         //mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
-        shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        var shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
         //mydata[pll].ap = new Object();
         //mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
@@ -305,13 +304,12 @@ var main = function() {
           "mods": mods
         };
         //親オブジェクトに代入
+        ssValue[pll] = new Object();
         ssValue[pll] = mydata;
         //テキスト整形
         //Object型をJSON形式に変換
         var myJson = JSON.stringify(ssValue);
         //セッションストレージへ格納（key: SSKEY, value: ssValue）
-        //var ssValue = {};
-        //ssValue = myStr;
         //sessionStorage.setItem(pll, ssValue);
         sessionStorage.setItem(SSKEY, myJson);
         //テキスト用エンコード
