@@ -31,6 +31,7 @@ var main = function() {
   //ブラウザ起動時に初期化する。
   //sessionStorage.removeItem(SSKEY);
   //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
+  //var ssValue = sessionStorage.getItem(SSKEY) || new Object();
   var ssValue = new Object();
   //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
   //格納するハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
@@ -281,7 +282,7 @@ var main = function() {
         //シールディング
         //mydata[pll].shielding = new Object();
         //mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
-        shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        var shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
         //mydata[pll].ap = new Object();
         //mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
@@ -303,7 +304,7 @@ var main = function() {
           "mods": mods
         };
         //親オブジェクトに代入
-        ssValue = sessionStorage.getItem(SSKEY);
+        ssValue[pll] = new Object();
         ssValue[pll] = mydata;
         //テキスト整形
         //Object型をJSON形式に変換
