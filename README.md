@@ -4,25 +4,10 @@
 - 日付情報の整形。done
 - <del>キャシュ先にしているtextareaを可視化したいと思う（ボタン押下の目視チェックにもなるので）。半分done。スクロールを整形する。</del>
 - コードの簡素化。
-- WebStorageを使ってみる。
+- WebStorageを使ってみる。done
     - localStorageはIITCがすでにだいぶ使っているのでsessionStrageを使うことにする。
-- 2回押したときは、後から押した方で先に出ていたデータを上書きする。
-- こういう↓ふうに連想配列に入れるにはどうしたらいいのか検討：
-
-```json
-pll1nnn...:{
-  portalname: String,
-  portallv: String,
-  faction: String,
-  needed8r: String,
-  shielding: String,
-  ap: String,
-  mods: String
-},
-pll2nnn...:{
-  ......
-}
-```
+- 2回押したときは、後から押した方で先に出ていたデータを上書きする。done
+- こういう↓ふうに連想配列に入れるにはどうしたらいいのか検討：done
 
 ## 注意点
 - IITCの独自プラグインに当たるかも知れず、使用するとBANになる可能性がなきにしもあらず、であることをよく理解したうえで使うべし。
