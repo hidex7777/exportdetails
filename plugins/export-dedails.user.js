@@ -26,65 +26,12 @@ var addJQuery = function(callback) {
 //main
 //この中ではjQuery使える。$の代わりにjQ
 var main = function() {
-  /*将来的には*/
   //sessionStorageで使用するキーを"export-details"とする（SSKEY）。
   var SSKEY = "export-details";
-  //ブラウザ起動時に初期化する。
-  //sessionStorage.removeItem(SSKEY);
-  //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
-  var ssValue = new Object();
-  //オブジェクトssValueの中にオブジェクト（ハッシュ）を格納する。
-  //格納するハッシュをクラス（プロトタイプ）としてあらかじめ定義しておく（Storage）。
-  /*モデル
-  sessionStorage{
-    SSKEY: ssValue Object
-  }
-  //ssValueのなかにおいて、pllnnn....(key)は一意である。
-  //既存のpll(key)のプロパティは上書きされる。
-  ssValue{
-    pll1nnn...:{
-      portalname: String,
-      portallv: String,
-      faction: String,
-      needed8r: String,
-      shielding: String,
-      ap: String,
-      mods: String
-    },
-    pll2nnn...:{
-      ......
-    }
-  }
-  */
-  //ひとつのポータルにひとつのStorageを割り当てる
-  /*var Storage = new Object();
-  var samp_pll = "pll37_401581__140_385654";
-  var samp_data = {
-    pll37_401581__140_385654:{
-      portalname: "サンプルポータル",
-      portallv: "L7",
-      faction: "RES",
-      needed8r: "@4",
-      shielding: "Shielding: 2222",
-      ap: "AP: 2525",
-      mods: "CPS, CPS, AXA, AXA"
-    }
-  };*/
-  /*
-  function(key) {
-    this.pll = key;
-    this.pll.portalname = new String();
-    this.pll.portallv = new String();
-    this.pll.faction = new String();
-    this.pll.needed8r = new String();
-    this.pll.shielding = new String();
-    this.pll.ap = new String();
-    this.pll.mods = new String();
-  };*/
-  //sessionStorageのvalueとして使うオブジェクトはひとつ（ssValue）。
-  //var ssValue = new Object();
+  var ssValue = {};
+
   //旧バージョンの尻拭い
-  //keyがpllで始まっているものをdelete, SSKEYも消す
+  //keyがpllで始まっているものをdelete, 0.0.3以降のSSKEYも消す
   var removeOldcache = function() {
     sessionStorage.removeItem(SSKEY);
     for (var i = 0; i < sessionStorage.length; i++) {
@@ -95,7 +42,7 @@ var main = function() {
     }
   };
   removeOldcache();
-  //sessionStorage.clear();
+
   //タイムスタンプ関数
   var styleDatetime = function(digits) {
     digits = digits.toString();
@@ -118,65 +65,69 @@ var main = function() {
     jQ('#downloadlink').attr('download', 'IITC' + getDatetime() + '.txt');
   };
   //キャシュアップデート関数
+  /*
+  setCache関数
+  Eボタンを押下すると、この関数が呼び出される
+  */
   var setCache = function() {
     //Mods取得と整形
     var getMods = function(context) {
-      var modsarr = ["none", "none", "none", "none"];
+      var mods = "";
       var moddiv = jQ('div.mods', context);
       for (var i = 0; i < 4; i++) {
         var mymod = jQ('span', moddiv).eq(i).text().toLowerCase();
         switch(mymod){
           case '' :
-            modsarr[i] = "none";
+            mods += "/none";
             break;
           case 'common portal shield' :
-            modsarr[i] = "CPS";
+            mods += "/CPS";
             break;
           case 'rare portal shield' :
-            modsarr[i] = "RPS";
+            mods += "/RPS";
             break;
           case 'very rare portal shield' :
-            modsarr[i] = "VRPS";
+            mods += "/VRPS";
             break;
           case 'very rare axa shield' :
-            modsarr[i] ="AXA";
+            mods +="/AXA";
             break;
           case 'common heat sink' :
-            modsarr[i] = "CHS";
+            mods += "/CHS";
             break;
           case 'rare heat sink' :
-            modsarr[i] = "RHS";
+            mods += "/RHS";
             break;
           case 'very rare heat sink' :
-            modsarr[i] = "VRHS";
+            mods += "/VRHS";
             break;
           case 'common multi-hack' :
-            modsarr[i] = "CMH";
+            mods += "/CMH";
             break;
           case 'rare multi-hack' :
-            modsarr[i] = "RMH";
+            mods += "/RMH";
             break;
           case 'very rare multi-hack' :
-            modsarr[i] = "VRMH";
+            mods += "/VRMH";
             break;
           case 'rare turret' :
-            modsarr[i] = "TU";
+            mods += "/TU";
             break;
           case 'rare force amp' :
-            modsarr[i] = "FA";
+            mods += "/FA";
             break;
           case 'rare link amp' :
-            modsarr[i] = "LA";
+            mods += "/LA";
             break;
           case 'very rare softbank ultra link' :
-            modsarr[i] = "SBUL";
+            mods += "/SBUL";
             break;
           default :
-            modsarr[i] = mymod;
+            mods += "/" + mymod;
             break;
         }
       }
-      return modsarr[0] + ", " + modsarr[1] + ", " + modsarr[2] + ", " + modsarr[3];
+      return mods.replace(/^\//, "");
     };
     //残りレゾ計算
     var neededforLv8 = function(context, portalLv) {
@@ -207,95 +158,47 @@ var main = function() {
     };
     //ダウンロードリンクをssValueから生成
     var setTextEnc = function() {
-     ssValue = sessionStorage.getItem(SSKEY);
-     //テーブルのデータ　key : mydata
-     //値mydata ={}
-     /*
-      var mydata = {};
-      mydata.portalname = new Object();
-      mydata.portallv = new Object();
-      mydata.faction = new Object();
-      mydata.needed8r = new Object();
-      mydata.shielding = new Object();
-      mydata.ap = new Object();
-      mydata.mods = new Object();
-      var myHref = "";
-      for (var i = 0; i < sessionStorage.length; i++) {
-        var key = sessionStorage.key(i);
-        console.log("key: " + key);
-        var myvalue = sessionStorage.getItem(key);
-        console.log(myvalue);
-        if (!myvalue) {
-          continue;
-        }
-        try {
-          //Object型にする
-          mydata = JSON.parse(myvalue);
-        } catch (event) {
-          console.log("e: " + event);
-          continue;
-        }
-        var pll;
-        for (pll in mydata) {
-          myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";  
-        }
-      }
-      */
+      ssValue = sessionStorage.getItem(SSKEY);
+      //sessionStorageのデータをObject型に変換
       var mydata = new Object();
       mydata = JSON.parse(ssValue);
       var myHref = "";
-      var pll;
-      for (pll in mydata) {
-        myHref += mydata.portalname + ", " + mydata.portallv + ", " + mydata.faction + ", " + mydata.needed8r + ", " + mydata.mods + ", " + mydata.shielding + ", " + mydata.ap + "\n";  
+      for (var pll in mydata) {
+        myHref += mydata[pll].portalname + ", " + mydata[pll].portallv + ", " + mydata[pll].faction + ", " + mydata[pll].needed8r + ", " + mydata[pll].mods + ", " + mydata[pll].shielding + ", " + mydata[pll].ap + "\n";
       }
       myHref = 'data:application/octet-stream,' + encodeURIComponent(myHref);
       jQ('a#downloadlink').attr('href', myHref);
     };
     //setTextEnc終わり
     //Eボタンが押されたとき。sessionStorageに入れるところまで
-    //ssValueが親Object、mydataが子オブジェクト
+    //ssValueが親Object（キーはexport-details）、mydataが子オブジェクト（キーはpll...）
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
-        //子Object生成
-        //var mydata = {};
-        //pll取得＝キーにする
-        var pll = getPll(pd);
-        //mydata[pll] = {};
+        ssValue = sessionStorage.getItem(SSKEY) ? sessionStorage.getItem(SSKEY) :{};
+        var pll = "";
+        pll = getPll(pd);
+        console.log("pll: " + pll);
         //ポータル名取得
-        //mydata[pll].portalname = new Object();
-        //mydata[pll].portalname = jQ('h3.title', pd).text();
         var portalname = jQ('h3.title', pd).text();
         //ポータルレベル取得
-        //mydata[pll].portallv = new Object();
         var portallv = jQ('div.imgpreview > span#level', pd).text();
-        //mydata[pll].portallv = "L" + portalLv.replace(/\s/g, "");
         portallv = "L" + portallv.replace(/\s/g, "");
         //faction取得
-        //mydata[pll].faction = new Object();
-        //mydata[pll].faction = pd.attr('class').toUpperCase();
         var faction = pd.attr('class').toUpperCase();
         //残りレゾネータ取得
-        //mydata[pll].needed8r = new Object();
-        //mydata[pll].needed8r = neededforLv8(jQ('#resodetails', pd), mydata[pll].portallv);
         var needed8r = neededforLv8(jQ('#resodetails', pd), portallv);
         //シールディング
-        //mydata[pll].shielding = new Object();
-        //mydata[pll].shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
-        shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
+        var shielding = "Shielding: " + jQ('#randdetails tbody tr:eq(2) td:eq(0)', pd).text();
         //AP
-        //mydata[pll].ap = new Object();
-        //mydata[pll].ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
         var ap = "AP: " + jQ('#randdetails tbody tr:eq(3) td:eq(0)', pd).text().replace(/\s/g, "");
         //MODs
-        //mydata[pll].mods = new Object();
-        //mydata[pll].mods = getMods(pd);
         var mods = getMods(pd);
         //取得日時
         //var lastupdate = "last update: " + getDatetime();
-        //子オブジェクト作成
-        var mydata = {
+        //親オブジェクトに代入
+        ssValue[pll] = {
           "portalname": portalname,
           "portallv": portallv,
           "faction": faction,
@@ -304,15 +207,10 @@ var main = function() {
           "ap": ap,
           "mods": mods
         };
-        //親オブジェクトに代入
-        ssValue[pll] = mydata;
         //テキスト整形
         //Object型をJSON形式に変換
         var myJson = JSON.stringify(ssValue);
-        //セッションストレージへ格納（key: SSKEY, value: ssValue）
-        //var ssValue = {};
-        //ssValue = myStr;
-        //sessionStorage.setItem(pll, ssValue);
+        console.log(ssValue);
         sessionStorage.setItem(SSKEY, myJson);
         //テキスト用エンコード
         setTextEnc();
