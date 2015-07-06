@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           Export Details for IITC
-// @version        0.0.2
+// @version        0.0.3
 // @description    Export info about Portals into local strage. Portal ID(pll), Portal name, level, MODs, Resonators, fuction, shielding, AP Gain.
 // @namespace      kojunkan.org
 // @include        https://www.ingress.com/intel*
@@ -30,8 +30,7 @@ var main = function() {
   var SSKEY = "export-details";
   var ssValue = {};
 
-  //旧バージョンの尻拭い
-  //keyがpllで始まっているものをdelete, 0.0.3以降のSSKEYも消す
+  //keyがpllで始まっているものをdelete（旧バージョンの尻拭い）, 0.0.3以降のSSKEYも消す
   var removeOldcache = function() {
     sessionStorage.removeItem(SSKEY);
     for (var i = 0; i < sessionStorage.length; i++) {
@@ -161,6 +160,7 @@ var main = function() {
       ssValue = sessionStorage.getItem(SSKEY);
       //sessionStorageのデータをObject型に変換
       var mydata = new Object();
+      //JSON形式からObject型へ変換
       mydata = JSON.parse(ssValue);
       var myHref = "";
       for (var pll in mydata) {
@@ -170,15 +170,17 @@ var main = function() {
       jQ('a#downloadlink').attr('href', myHref);
     };
     //setTextEnc終わり
-    //Eボタンが押されたとき。sessionStorageに入れるところまで
+    //
+    //Eボタン押下時。sessionStorageに入れるところまで。
     //ssValueが親Object（キーはexport-details）、mydataが子オブジェクト（キーはpll...）
     //#portaldetailsが存在しないか、中身が空ならexit
     var pd = jQ('#portaldetails') || false;
     if (pd) {
       if (pd.html()) {
-        ssValue = sessionStorage.getItem(SSKEY) ? sessionStorage.getItem(SSKEY) :{};
-        var pll = "";
-        pll = getPll(pd);
+        console.log(pd.html());
+        //↓ここでparseが必要なことに思い至らず3日ぐらい詰んだ・・・
+        var ssValue = sessionStorage.getItem(SSKEY) ? JSON.parse(sessionStorage.getItem(SSKEY)) :{};
+        var pll = getPll(pd);
         console.log("pll: " + pll);
         //ポータル名取得
         var portalname = jQ('h3.title', pd).text();
@@ -198,6 +200,7 @@ var main = function() {
         //取得日時
         //var lastupdate = "last update: " + getDatetime();
         //親オブジェクトに代入
+        ssValue[pll] = new Object();
         ssValue[pll] = {
           "portalname": portalname,
           "portallv": portallv,
@@ -207,7 +210,6 @@ var main = function() {
           "ap": ap,
           "mods": mods
         };
-        //テキスト整形
         //Object型をJSON形式に変換
         var myJson = JSON.stringify(ssValue);
         console.log(ssValue);
